@@ -1,2 +1,2 @@
-# resume-ai-api
+# ResumeAI API
  
