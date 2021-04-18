@@ -16,6 +16,6 @@ async def create_upload_file(file: UploadFile = File(...)):
   print(file.filename)
   print(file.content_type)
 
-  with open(file.filename, 'wb') as f:
+  with open(f'./uploaded_files/{file.filename}', 'wb') as f:
     contents = await file.read()
     f.write(contents)
