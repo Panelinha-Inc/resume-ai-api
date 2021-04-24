@@ -18,7 +18,7 @@ async def create_upload_file(file: UploadFile = File(...)):
   # print(f'Original filename: {file.filename}')
   # print(f'Content type: {file.content_type}')
   
-  new_filename, content = await generate_hash(file)
+  new_filename, content = generate_hash(file.file)
   # print(f'New filename: {new_filename}')
 
   with open(f'./uploaded_files/{new_filename}.pdf', 'wb') as f:
