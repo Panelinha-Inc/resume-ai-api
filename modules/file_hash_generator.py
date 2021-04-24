@@ -1,8 +1,6 @@
 import hashlib
 
-from fastapi import File, UploadFile
-
-async def generate_hash(file: UploadFile = File(...)):
+def generate_hash(file):
   '''
   Hash File Generator
 
@@ -16,7 +14,7 @@ async def generate_hash(file: UploadFile = File(...)):
   '''
 
   # Read bytes from file
-  content = await file.read()
+  content = file.read()
   
   # Generate hash from file
   result = hashlib.md5(content)
