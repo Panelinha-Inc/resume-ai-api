@@ -2,6 +2,12 @@
  
 ---
 
+## Instalação da pdf2image:
+
+`conda install -c conda-forge poppler`
+
+`pip install pdf2image`
+
 ## Instalação da PyTesseract no Linux
 
 * Tesseract: `sudo apt install tesseract-ocr`
