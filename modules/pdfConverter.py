@@ -4,7 +4,7 @@ import os
 # Referência lib de conversão: https://pypi.org/project/pdf2image/
 # Referência para as imagens resultantes: https://pillow.readthedocs.io/en/stable/reference/Image.html
 
-def pdfConverter(input_path, output_path='images', form='png', dpi=300):
+def pdfConverter(input_path, output_path='images', form='png', dpi=300, save_in_folder=False):
 
     """ Converts each page of a PDF document into an image, 
     saves the images to the device, and returns a list with 
@@ -23,18 +23,23 @@ def pdfConverter(input_path, output_path='images', form='png', dpi=300):
         dpi: int, default 300
             Measure of image print quality, in dots per inch.
 
+        save_in_folder: bool, default False
+            Indicates if the images should be saved in a folder.
+
     Returns:
         images: list
             List of PIL objects. Each object brings one page from the original PDF file. 
 
     """
 
-    if not os.path.isdir(output_path):
-        os.makedirs(output_path)
-
-    filename = input_path.split('/')[-1].split('.')[0]
     images = convert_from_path(input_path, fmt=form, dpi=dpi)
-    for i, im in enumerate(images):
-        im.save(output_path+'/'+filename+'_0'+str(i)+'.'+form)
+
+    if save_in_folder:
+        if not os.path.isdir(output_path):
+            os.makedirs(output_path)
+
+        filename = input_path.split('/')[-1].split('.')[0]
+        for i, im in enumerate(images):
+            im.save(output_path+'/'+filename+'_0'+str(i)+'.'+form)
     
     return images
