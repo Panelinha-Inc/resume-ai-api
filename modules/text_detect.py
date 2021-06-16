@@ -1,10 +1,12 @@
 import pytesseract
+import platform
 import pandas as pd
 
 
 class TextDetect():
     def __init__(self, path_cmd):
-        pytesseract.pytesseract.tesseract_cmd = path_cmd
+        if platform.system() == 'Windows':
+            pytesseract.pytesseract.tesseract_cmd = path_cmd
 
     def get_data(self, image, join=True):
         """

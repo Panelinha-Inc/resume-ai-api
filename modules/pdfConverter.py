@@ -23,6 +23,9 @@ def pdfConverter(input_path, output_path='images', form='png', dpi=300, poppler_
         dpi: int, default 300
             Measure of image print quality, in dots per inch.
 
+        save_in_folder: bool, default False
+            Indicates if the images should be saved in a folder.
+
     Returns:
         images: list
             List of PIL objects. Each object brings one page from the original PDF file. 
@@ -31,6 +34,7 @@ def pdfConverter(input_path, output_path='images', form='png', dpi=300, poppler_
     images = convert_from_path(input_path, fmt=form, dpi=dpi, poppler_path=poppler_path)
 
     if output_path:
+
         if not os.path.isdir(output_path):
             os.makedirs(output_path)
 
