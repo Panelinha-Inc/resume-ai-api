@@ -1,5 +1,6 @@
-import pyrebase
 import json
+import shutil
+import pyrebase
 
 
 class PyrebaseConnector(object):
@@ -30,14 +31,14 @@ class PyrebaseConnector(object):
   # Create a user
   def sign_up(self, email, password, displayName):
     try:
-      self.user = self.auth.create_user_with_email_and_password(email, password)
+      user = self.auth.create_user_with_email_and_password(email, password)
 
       data = {
-          'displayName': displayName
+          'displayName': displayName if displayName else email,
       }
-      self.db.child('users').child(self.user['localId']).set(data)
+      self.db.child('users').child(user['localId']).set(data)
 
-      return 201
+      return user
 
     except Exception as e:
       _error_json = e.args[1]
@@ -47,8 +48,8 @@ class PyrebaseConnector(object):
   # Log the user in application
   def login(self, email, password):
     try:
-      self.user = self.auth.sign_in_with_email_and_password(email, password)
-      return 200
+      user = self.auth.sign_in_with_email_and_password(email, password)
+      return user
     except Exception as e:
       _error_json = e.args[1]
       _error = json.loads(_error_json)['error']
