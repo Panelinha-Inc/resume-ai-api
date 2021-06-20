@@ -69,3 +69,6 @@ async def create_upload_file(user_id: str = Header(...), token: str = Header(...
   else:
     return {'status': 'fail'}
 
+@app.get('/document/')
+def get_document(fileId: str, user_id: str = Header(...)):
+  return pc.search_pdf(user_id, fileId)
