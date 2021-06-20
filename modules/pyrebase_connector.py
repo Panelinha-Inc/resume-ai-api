@@ -77,13 +77,18 @@ class PyrebaseConnector(object):
       return _error['message']
 
   # Register a PDF in database
-  def create_pdf(self, ownerId, hash, pdf_images):
-    # TO-DO
-    # Esta tendo problema de permissão negada para salvar o arquivo
+  def create_pdf(self, ownerId, token, hash, pdf_images):
     for index in range(len(pdf_images)):
-      self.storage.child(f'{index:02d}.png').put(f'images/{hash}_{index:02d}.png')
-    data = {
-      'pdfs': [hash]
-    }
-    self.db.child('users').child(ownerId).set(data)
+      self.storage.child(f'pdf_images/{ownerId}/{hash}/{index:02d}.png').put(f'images/{hash}/{index:02d}.png')
+    
+    shutil.rmtree(f'images/{hash}/')
+
+    data = [
+      self.storage.child(f'pdf_images/{ownerId}/{hash}/{index:02d}.png').get_url(token) for index in range(len(pdf_images))
+    ]
+    
+    self.db.child('users').child(ownerId).child('pdfs').child(hash).set(data)
+    
     return 201
+
+  # Search all URL imgaes of a PDF
