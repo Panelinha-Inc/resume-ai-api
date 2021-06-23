@@ -1,5 +1,6 @@
 data_test/
 .idea/
+poppler-0.68.0/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -118,3 +119,8 @@ dmypy.json
 
 # File folder
 /uploaded_files/
+/images/
+
+# Settings files
+firebase_key.json
+.vscode/settings.json
