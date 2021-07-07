@@ -49,11 +49,11 @@ class PyrebaseConnector(object):
   def login(self, email, password):
     try:
       user = self.auth.sign_in_with_email_and_password(email, password)
-      return user
+      return 200, user
     except Exception as e:
       _error_json = e.args[1]
       _error = json.loads(_error_json)['error']
-      return _error['message']
+      return 401, _error['message']
 
   def update_user(self, displayName):
     try:

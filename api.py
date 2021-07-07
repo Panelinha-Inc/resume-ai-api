@@ -46,7 +46,11 @@ def signup(sign_up_form: SignUpForm):
 
 @app.get('/login/')
 def login(credentials: HTTPBasicCredentials = Depends(security)):
-  return pc.login(credentials.username, credentials.password)
+  status_code, login_data = pc.login(credentials.username, credentials.password)
+  return {
+    'status_code': status_code,
+    'data': login_data
+  }
 
 @app.post('/uploadfile/', status_code=201)
 async def create_upload_file(user_id: str = Header(...), token: str = Header(...), file: UploadFile = File(...)):
