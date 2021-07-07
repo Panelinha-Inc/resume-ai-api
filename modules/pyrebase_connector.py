@@ -38,12 +38,12 @@ class PyrebaseConnector(object):
       }
       self.db.child('users').child(user['localId']).set(data)
 
-      return user
+      return 201, user
 
     except Exception as e:
       _error_json = e.args[1]
       _error = json.loads(_error_json)['error']
-      return _error['message']
+      return 401, _error['message']
 
   # Log the user in application
   def login(self, email, password):

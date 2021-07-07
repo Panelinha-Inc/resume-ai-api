@@ -41,8 +41,11 @@ def hello_world():
 
 @app.post('/signup/', status_code=201)
 def signup(sign_up_form: SignUpForm):
-  user = pc.sign_up(sign_up_form.email, sign_up_form.password, sign_up_form.displayName)
-  return user
+  status_code, sign_up_data = pc.sign_up(sign_up_form.email, sign_up_form.password, sign_up_form.displayName)
+  return {
+    'status_code': status_code,
+    'data': sign_up_data
+  }
 
 @app.get('/login/')
 def login(credentials: HTTPBasicCredentials = Depends(security)):
