@@ -39,8 +39,9 @@ def pdfConverter(input_path, output_path='images', form='png', dpi=300, poppler_
             os.makedirs(output_path)
 
         filename = input_path.split('/')[-1].split('.')[0]
+        os.makedirs(f'{output_path}/{filename}')
 
         for i, im in enumerate(images):
-            im.save(output_path+'/'+filename+'_0'+str(i)+'.'+form)
+            im.save(f'{output_path}/{filename}/{i:02d}.{form}')
     
     return images
