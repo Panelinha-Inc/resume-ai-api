@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from fastapi import FastAPI, File, UploadFile, Header, Depends
+from fastapi import FastAPI, Form, File, UploadFile, Header, Depends
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -54,6 +54,15 @@ def login(credentials: HTTPBasicCredentials = Depends(security)):
     'status_code': status_code,
     'data': login_data
   }
+
+@app.put('/user/', status_code=200)
+async def change_profile_pic(displayName: str = Form(...), user_id: str = Header(...), token: str = Header(...), file: UploadFile = File(...)):
+  result = pc.update_user(user_id, token, displayName, file)
+  
+  if result == 200:
+    return {'status': 'success'}
+  else:
+    return {'status': 'fail'}
 
 @app.post('/uploadfile/', status_code=201)
 async def create_upload_file(user_id: str = Header(...), token: str = Header(...), file: UploadFile = File(...)):
