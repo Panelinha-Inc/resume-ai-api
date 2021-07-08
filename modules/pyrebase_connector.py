@@ -32,9 +32,12 @@ class PyrebaseConnector(object):
   def sign_up(self, email, password, displayName):
     try:
       user = self.auth.create_user_with_email_and_password(email, password)
-
+      
+      profile_pic = self.storage.child('profile_images/blank-profile-pic.png').get_url(user['idToken'])
+      
       data = {
           'displayName': displayName if displayName else email,
+          'profilePic': profile_pic,
       }
       self.db.child('users').child(user['localId']).set(data)
 
