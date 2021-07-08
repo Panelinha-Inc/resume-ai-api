@@ -41,6 +41,9 @@ class PyrebaseConnector(object):
       }
       self.db.child('users').child(user['localId']).set(data)
 
+      user['displayName'] = data['displayName']
+      user['profilePic'] = data['profilePic']
+
       return 201, user
 
     except Exception as e:
@@ -52,6 +55,8 @@ class PyrebaseConnector(object):
   def login(self, email, password):
     try:
       user = self.auth.sign_in_with_email_and_password(email, password)
+      user['displayName'] = self.db.child('users').child(user['localId']).child('displayName').get().val()
+      user['profilePic'] = self.db.child('users').child(user['localId']).child('profilePic').get().val()
       return 200, user
     except Exception as e:
       _error_json = e.args[1]
