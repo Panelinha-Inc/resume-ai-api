@@ -1,3 +1,4 @@
+import os
 import json
 import shutil
 import pyrebase
@@ -63,12 +64,26 @@ class PyrebaseConnector(object):
       _error = json.loads(_error_json)['error']
       return 401, _error['message']
 
-  def update_user(self, displayName):
+  def update_user(self, ownerId, token, displayName, profilePic):
     try:
+      content_type = profilePic.content_type.split('/')[1]
+      
+      with open(f'images/{ownerId}.{content_type}', 'wb') as f:
+        f.write(profilePic.file.read())
+
+      self.storage.child(f'profile_images/{ownerId}/img_{ownerId}').put(f'images/{ownerId}.{content_type}', token)
+
+      os.remove(f'images/{ownerId}.{content_type}')
+      
+      profilePic = self.storage.child(f'profile_images/{ownerId}/img_{ownerId}').get_url(token)
+      
       data = {
-        'displayName': displayName
+        'displayName': displayName,
+        'profilePic': profilePic,
       }
-      self.db.child('users').child(self.auth.current_user['localId']).update(data)
+
+      self.db.child('users').child(ownerId).update(data, token)
+      
       return 200
     except Exception as e:
       _error_json = e.args[1]
