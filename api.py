@@ -19,6 +19,8 @@ class SignUpForm(BaseModel):
   password: str
   displayName: Optional[str] = None
 
+class ResetPasswordForm(BaseModel):
+  email: str
 
 app = FastAPI()
 
@@ -58,6 +60,18 @@ def login(credentials: HTTPBasicCredentials = Depends(security)):
 @app.put('/user/', status_code=200)
 async def update_profile(displayName: str = Form(...), user_id: str = Header(...), token: str = Header(...), file: UploadFile = File(...)):
   result = pc.update_user(user_id, token, displayName, file)
+  
+  if result == 200:
+    return {'status': 'success'}
+  else:
+    return {
+      'status': 'fail',
+      'data': result
+    }
+
+@app.post('/resetpassword/', status_code=200)
+def reset_password(reset_password_form: ResetPasswordForm):
+  result = pc.change_password(reset_password_form.email)
   
   if result == 200:
     return {'status': 'success'}
