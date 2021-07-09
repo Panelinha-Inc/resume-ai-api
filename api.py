@@ -56,13 +56,16 @@ def login(credentials: HTTPBasicCredentials = Depends(security)):
   }
 
 @app.put('/user/', status_code=200)
-async def change_profile_pic(displayName: str = Form(...), user_id: str = Header(...), token: str = Header(...), file: UploadFile = File(...)):
+async def update_profile(displayName: str = Form(...), user_id: str = Header(...), token: str = Header(...), file: UploadFile = File(...)):
   result = pc.update_user(user_id, token, displayName, file)
   
   if result == 200:
     return {'status': 'success'}
   else:
-    return {'status': 'fail'}
+    return {
+      'status': 'fail',
+      'data': result
+    }
 
 @app.post('/uploadfile/', status_code=201)
 async def create_upload_file(user_id: str = Header(...), token: str = Header(...), file: UploadFile = File(...)):
