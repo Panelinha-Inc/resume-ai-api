@@ -1,3 +1,4 @@
+import os
 import json
 import shutil
 import pyrebase
@@ -32,35 +33,57 @@ class PyrebaseConnector(object):
   def sign_up(self, email, password, displayName):
     try:
       user = self.auth.create_user_with_email_and_password(email, password)
-
+      
+      profile_pic = self.storage.child('profile_images/blank-profile-pic.png').get_url(user['idToken'])
+      
       data = {
           'displayName': displayName if displayName else email,
+          'profilePic': profile_pic,
       }
       self.db.child('users').child(user['localId']).set(data)
 
-      return user
+      user['displayName'] = data['displayName']
+      user['profilePic'] = data['profilePic']
+
+      return 201, user
 
     except Exception as e:
       _error_json = e.args[1]
       _error = json.loads(_error_json)['error']
-      return _error['message']
+      return 401, _error['message']
 
   # Log the user in application
   def login(self, email, password):
     try:
       user = self.auth.sign_in_with_email_and_password(email, password)
-      return user
+      user['displayName'] = self.db.child('users').child(user['localId']).child('displayName').get().val()
+      user['profilePic'] = self.db.child('users').child(user['localId']).child('profilePic').get().val()
+      return 200, user
     except Exception as e:
       _error_json = e.args[1]
       _error = json.loads(_error_json)['error']
-      return _error['message']
+      return 401, _error['message']
 
-  def update_user(self, displayName):
+  def update_user(self, ownerId, token, displayName, profilePic):
     try:
+      content_type = profilePic.content_type.split('/')[1]
+      
+      with open(f'images/{ownerId}.{content_type}', 'wb') as f:
+        f.write(profilePic.file.read())
+
+      self.storage.child(f'profile_images/{ownerId}/img_{ownerId}').put(f'images/{ownerId}.{content_type}', token)
+
+      os.remove(f'images/{ownerId}.{content_type}')
+      
+      profilePic = self.storage.child(f'profile_images/{ownerId}/img_{ownerId}').get_url(token)
+      
       data = {
-        'displayName': displayName
+        'displayName': displayName,
+        'profilePic': profilePic,
       }
-      self.db.child('users').child(self.auth.current_user['localId']).update(data)
+
+      self.db.child('users').child(ownerId).update(data, token)
+      
       return 200
     except Exception as e:
       _error_json = e.args[1]
