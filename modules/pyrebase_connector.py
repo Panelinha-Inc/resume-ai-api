@@ -88,7 +88,7 @@ class PyrebaseConnector(object):
     except Exception as e:
       _error_json = e.args[1]
       _error = json.loads(_error_json)['error']
-      return _error['message']
+      return _error
 
   def change_password(self, email):
     try:
