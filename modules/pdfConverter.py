@@ -41,6 +41,6 @@ def pdfConverter(input_path, output_path='images', form='png', dpi=300, poppler_
 
         for i, im in enumerate(images):
             final_name = f'{output_path}/{filename}/{i:02d}.{form}'
-            if not os.path.isfile(final_name): im.save()
+            if not os.path.isfile(final_name): im.save(final_name)
     
     return images
