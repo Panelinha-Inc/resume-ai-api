@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from modules.pdfConverter import pdfConverter
+from modules.processing_text import extract_info_from_pdf
 from modules.file_hash_generator import generate_hash
 from modules.pyrebase_connector import PyrebaseConnector
 
@@ -93,9 +94,10 @@ async def create_upload_file(user_id: str = Header(...), token: str = Header(...
     f.write(content)
 
   pdf_images = pdfConverter(pdf_path, poppler_path=r'poppler-0.68.0\bin')
+  pdf_info = extract_info_from_pdf(pdf_path)
   os.remove(pdf_path)
 
-  result = pc.create_pdf(user_id, token, new_filename, pdf_images)
+  result = pc.create_pdf(user_id, token, new_filename, pdf_images, pdf_info)
 
   if result == 201:
     return {'status': 'success'}
