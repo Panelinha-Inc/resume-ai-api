@@ -122,3 +122,11 @@ class PyrebaseConnector(object):
   def search_pdf(self, ownerId, hash, token):
     return self.db.child(f'users/{ownerId}/pdfs/{hash}').get(token).val()
 
+  def index_pdf(self, ownerId, token):
+    user_pdfs = self.db.child(f'users/{ownerId}/pdfs').get(token)
+    user_pdfs_dict = {}
+    
+    for user in user_pdfs.each():
+      user_pdfs_dict[user.key()] = user.val()
+    
+    return user_pdfs_dict
