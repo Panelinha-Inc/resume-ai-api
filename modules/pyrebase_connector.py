@@ -119,5 +119,6 @@ class PyrebaseConnector(object):
     return 201
 
   # Search all URL imgaes of a PDF
-  def search_pdf(self, ownerId, hash):
-    return self.db.child(f'users/{ownerId}/pdfs/{hash}').get().val()
+  def search_pdf(self, ownerId, hash, token):
+    return self.db.child(f'users/{ownerId}/pdfs/{hash}').get(token).val()
+
