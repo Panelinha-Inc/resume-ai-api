@@ -66,21 +66,24 @@ class PyrebaseConnector(object):
 
   def update_user(self, ownerId, token, displayName, profilePic):
     try:
-      content_type = profilePic.content_type.split('/')[1]
-      
-      with open(f'images/{ownerId}.{content_type}', 'wb') as f:
-        f.write(profilePic.file.read())
+      data = {}
 
-      self.storage.child(f'profile_images/{ownerId}/img_{ownerId}').put(f'images/{ownerId}.{content_type}', token)
+      if profilePic:
+        
+        content_type = profilePic.content_type.split('/')[1]
 
-      os.remove(f'images/{ownerId}.{content_type}')
-      
-      profilePic = self.storage.child(f'profile_images/{ownerId}/img_{ownerId}').get_url(token)
-      
-      data = {
-        'displayName': displayName,
-        'profilePic': profilePic,
-      }
+        with open(f'images/{ownerId}.{content_type}', 'wb') as f:
+          f.write(profilePic.file.read())
+
+        self.storage.child(f'profile_images/{ownerId}/img_{ownerId}').put(f'images/{ownerId}.{content_type}', token)
+
+        os.remove(f'images/{ownerId}.{content_type}')
+        
+        profilePic = self.storage.child(f'profile_images/{ownerId}/img_{ownerId}').get_url(token)
+        data['profilePic'] = profilePic
+
+      if displayName:
+        data['displayName'] = displayName
 
       self.db.child('users').child(ownerId).update(data, token)
       
