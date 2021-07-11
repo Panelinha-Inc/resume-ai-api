@@ -1,9 +1,10 @@
 fastapi==0.63.0
 uvicorn==0.13.4
 python-multipart==0.0.5
-pytesseract~=0.3.7
-opencv-python~=4.5.1.48
+#pytesseract~=0.3.7
+#opencv-python~=4.5.1.48
 pdf2image==1.15.1
 pandas~=1.2.4
 numpy~=1.20.2
 pyrebase==3.0.27
+pymupdf==1.18.14
