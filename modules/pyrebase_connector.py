@@ -101,6 +101,8 @@ class PyrebaseConnector(object):
 
   # Register a PDF in database
   def create_pdf(self, ownerId, token, hash, pdf_images, pdf_info):
+    self.db.child('users').child(ownerId).child('pdfs').child(hash).set({'status': 'processing'})
+    
     for index in range(len(pdf_images)):
       self.storage.child(f'pdf_images/{ownerId}/{hash}/{index:02d}.png').put(f'images/{hash}/{index:02d}.png')
     
@@ -109,6 +111,8 @@ class PyrebaseConnector(object):
     pdf_info['pages'] = [
       self.storage.child(f'pdf_images/{ownerId}/{hash}/{index:02d}.png').get_url(token) for index in range(len(pdf_images))
     ]
+
+    pdf_info['status'] = 'processed'
     
     self.db.child('users').child(ownerId).child('pdfs').child(hash).set(pdf_info)
     

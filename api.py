@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from fastapi import FastAPI, Form, File, UploadFile, Header, Depends
+from fastapi import FastAPI, Form, File, UploadFile, Header, Depends, BackgroundTasks
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -36,6 +36,24 @@ app.add_middleware(
 security = HTTPBasic()
 
 pc = PyrebaseConnector()
+
+
+def create_pdf(user_id: str, token: str, file: UploadFile):
+  content_type = file.content_type.split('/')[1]
+  
+  new_filename, content = generate_hash(file.file)
+
+  pdf_path = f'./uploaded_files/{new_filename}.{content_type}'
+
+  with open(pdf_path, 'wb') as f:
+    f.write(content)
+
+  pdf_images = pdfConverter(pdf_path, poppler_path=r'poppler-0.68.0\bin')
+  pdf_info = extract_info_from_pdf(pdf_path)
+  os.remove(pdf_path)
+
+  pc.create_pdf(user_id, token, new_filename, pdf_images, pdf_info)
+  print('Finished creating PDF')
 
 
 @app.get('/')
@@ -83,26 +101,9 @@ def reset_password(reset_password_form: ResetPasswordForm):
     }
 
 @app.post('/uploadfile/', status_code=201)
-async def create_upload_file(user_id: str = Header(...), token: str = Header(...), file: UploadFile = File(...)):
-  content_type = file.content_type.split('/')[1]
-  
-  new_filename, content = generate_hash(file.file)
-
-  pdf_path = f'./uploaded_files/{new_filename}.{content_type}'
-
-  with open(pdf_path, 'wb') as f:
-    f.write(content)
-
-  pdf_images = pdfConverter(pdf_path, poppler_path=r'poppler-0.68.0\bin')
-  pdf_info = extract_info_from_pdf(pdf_path)
-  os.remove(pdf_path)
-
-  result = pc.create_pdf(user_id, token, new_filename, pdf_images, pdf_info)
-
-  if result == 201:
-    return {'status': 'success'}
-  else:
-    return {'status': 'fail'}
+async def create_upload_file(background_tasks: BackgroundTasks, user_id: str = Header(...), token: str = Header(...), file: UploadFile = File(...)):
+  background_tasks.add_task(create_pdf, user_id, token, file)
+  return {'status': 'document was uploaded successfully'}
 
 @app.get('/document/')
 def get_document(fileId: str, user_id: str = Header(...)):
