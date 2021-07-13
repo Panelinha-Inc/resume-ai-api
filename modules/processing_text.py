@@ -1,5 +1,5 @@
 import re
-import spacy
+#import spacy
 import fitz
 import numpy as np
 
@@ -185,7 +185,7 @@ def extract_info_from_pdf(pdf_path):
 
     info = extract_info_from_text(text)
 
-    dict = {
+    return {
         "Dados pessoais": {
             "Data de nascimento": info["data_nasc"],
             "Contato": info["contato"],
@@ -196,5 +196,3 @@ def extract_info_from_pdf(pdf_path):
         "Idiomas": info["idiomas"],
         "Experiências profissionais": info["experiencias"]
     }
-
-    return dict

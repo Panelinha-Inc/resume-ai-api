@@ -100,20 +100,33 @@ class PyrebaseConnector(object):
       return _error['message']
 
   # Register a PDF in database
-  def create_pdf(self, ownerId, token, hash, pdf_images):
+  def create_pdf(self, ownerId, token, hash, pdf_images, pdf_info):
+    self.db.child('users').child(ownerId).child('pdfs').child(hash).set({'status': 'processing'})
+    
     for index in range(len(pdf_images)):
       self.storage.child(f'pdf_images/{ownerId}/{hash}/{index:02d}.png').put(f'images/{hash}/{index:02d}.png')
     
     shutil.rmtree(f'images/{hash}/')
 
-    data = [
+    pdf_info['pages'] = [
       self.storage.child(f'pdf_images/{ownerId}/{hash}/{index:02d}.png').get_url(token) for index in range(len(pdf_images))
     ]
+
+    pdf_info['status'] = 'processed'
     
-    self.db.child('users').child(ownerId).child('pdfs').child(hash).set(data)
+    self.db.child('users').child(ownerId).child('pdfs').child(hash).set(pdf_info)
     
     return 201
 
   # Search all URL imgaes of a PDF
-  def search_pdf(self, ownerId, hash):
-    return self.db.child(f'users/{ownerId}/pdfs/{hash}').get().val()
+  def search_pdf(self, ownerId, hash, token):
+    return self.db.child(f'users/{ownerId}/pdfs/{hash}').get(token).val()
+
+  def index_pdf(self, ownerId, token):
+    user_pdfs = self.db.child(f'users/{ownerId}/pdfs').get(token)
+    user_pdfs_dict = {}
+    
+    for user in user_pdfs.each():
+      user_pdfs_dict[user.key()] = user.val()
+    
+    return user_pdfs_dict
