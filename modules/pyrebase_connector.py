@@ -130,3 +130,6 @@ class PyrebaseConnector(object):
       user_pdfs_dict[user.key()] = user.val()
     
     return user_pdfs_dict
+
+  def delete_pdf(self, ownerId, hash, token):
+    return self.db.child(f'users/{ownerId}/pdfs/{hash}').remove(token)
