@@ -109,6 +109,10 @@ async def create_upload_file(background_tasks: BackgroundTasks, user_id: str = H
 def get_document(fileId: str, user_id: str = Header(...), token: str = Header(...)):
   return pc.search_pdf(user_id, fileId, token)
 
+@app.delete('/document/')
+def get_document(fileId: str, user_id: str = Header(...), token: str = Header(...)):
+  return pc.delete_pdf(user_id, fileId, token)
+
 @app.get('/documents/')
 def get_documents(user_id: str = Header(...), token: str = Header(...)):
   return pc.index_pdf(user_id, token)
