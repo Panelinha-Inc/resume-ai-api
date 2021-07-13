@@ -124,10 +124,12 @@ class PyrebaseConnector(object):
 
   def index_pdf(self, ownerId, token):
     user_pdfs = self.db.child(f'users/{ownerId}/pdfs').get(token)
-    user_pdfs_dict = {}
+    user_pdfs_dict = []
     
     for user in user_pdfs.each():
-      user_pdfs_dict[user.key()] = user.val()
+      data = user.val()
+      data['fileId'] = user.key()
+      user_pdfs_dict.append(data)
     
     return user_pdfs_dict
 
