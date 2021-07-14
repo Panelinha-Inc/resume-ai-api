@@ -3,7 +3,7 @@ import spacy
 import fitz
 import numpy as np
 
-nlp1 = spacy.load(R"./ner_model/model-best") #load the best model
+nlp1 = spacy.load('modules/ner_model/model-best') #load the best model
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
