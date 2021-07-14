@@ -1,7 +1,9 @@
 import re
-#import spacy
+import spacy
 import fitz
 import numpy as np
+
+nlp1 = spacy.load(R"./ner_model/model-best") #load the best model
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -147,7 +149,7 @@ def extract_info_from_text(text):
     for url in urls:
         if 'linkedin' in url:
             contato['LinkedIn'] = url
-        elif 'GitHub' in url:
+        elif 'github' in url:
             contato['GitHub'] = url
         elif '@' in url:
             contato['Email'] = url
@@ -177,6 +179,7 @@ def extract_info_from_pdf(pdf_path):
         for page in pdf:
             text += page.getText().replace('●', '').replace('�', '').replace('•', '').replace('\u200b', '')
 
+    doc = nlp1(text)
     text =  ' '.join(text.replace('\n', ' ').split()).replace('. com', '.com')
     
     for  i in range(97, 123):
@@ -184,15 +187,34 @@ def extract_info_from_pdf(pdf_path):
         text = text.replace(f'{letter}- ', f'{letter}-')
 
     info = extract_info_from_text(text)
+    nome = ''
+    endereco = ''
+    cursos = []
+
+    for ent in doc.ents:
+        text_ent = ent.text.replace('\n', ' ').replace('\xa0', ' ')
+        text_ent = ' '.join(text_ent.replace('\n', ' ').split())
+
+        if not nome and ent.label_ == 'nome':
+            nome = text_ent
+
+        if not endereco and ent.label_ == 'endereco':
+            endereco = text_ent
+
+        if ent.label_ == 'curso':
+            cursos.append(text_ent)
 
     return {
         "Dados pessoais": {
+            "Nome": nome,
             "Data de nascimento": info["data_nasc"],
             "Contato": info["contato"],
             "Endereço": {
+                "Endereço": endereco,
                 "CEP": info["cep"]
             }
         },
         "Idiomas": info["idiomas"],
-        "Experiências profissionais": info["experiencias"]
+        "Experiências profissionais": info["experiencias"],
+        "Formação": cursos
     }
